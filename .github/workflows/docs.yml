@@ -35,4 +35,4 @@ jobs:
       - name: Build Documentation
         run: bun run docs
       - name: Deploy Documentation
-        run: bash phpdocs.sh "${GITHUB_SHA::7}"
+        run: bash phpdoc.sh "${GITHUB_SHA::7}"
