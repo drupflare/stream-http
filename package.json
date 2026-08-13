@@ -6,7 +6,7 @@
 	"scripts": {
 		"prettier": "prettier --write .",
 		"prettier:check": "prettier --check .",
-		"docs": "./vendor/bin/phpdoc -d src -t docs --template=\"clean\" && cp .phpdoc/template/favicon.png docs/favicon.png && cp .phpdoc/template/favicon.ico docs/favicon.ico",
+		"docs": "./vendor/bin/phpdoc -d src -t docs --template=\"clean\" && cp .phpdoc/template/favicon.png docs/favicon.png && cp .phpdoc/template/favicon.ico docs/favicon.ico && bash phpdoc-favicon.sh",
 		"lint": "php tests/lint.php",
 		"test": "php tests/lint.php && php tests/run-suite.php",
 		"test:suite": "php tests/run-suite.php",
