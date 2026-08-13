@@ -1,0 +1,11 @@
+node_modules/
+vendor/
+coverage/
+bun.lock
+LICENSE
+.husky/
+
+# PHP is formatted by @prettier/plugin-php at the house style -- TABS rendered 4 wide,
+# 100-char lines -- the same as every other language here, NOT 2-space Drupal layout.
+# PHPCS still owns everything semantic; the sniffs that overlap prettier are excluded in
+# phpcs.xml.dist with the reasoning inline.
