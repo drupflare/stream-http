@@ -5,9 +5,16 @@ composer.lock
 composer.phar
 .phpdoc/cache
 
+# phpDocumentor
+docs/
+
 # bun
 node_modules/
 package-lock.json
+
+# written by tests/coverage.php
+coverage/
+*.lcov
 
 # logs and scratch
 *.log
