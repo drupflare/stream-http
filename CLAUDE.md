@@ -6,7 +6,8 @@ formerly named `cfw_capability`), and now standalone.
 
 ## Status
 
-**Publishable.** The three blockers are closed:
+**Published.** `drupflare/stream-http` is live on Packagist at **v0.1.0**. The three blockers that
+held it back are closed:
 
 - the namespace is `Drupflare\StreamHttp`, which is what `composer.json` autoloads from `src/`
 - there is no `Host`, no `Drupal\` reference and no framework dependency; the fetch arrives through
