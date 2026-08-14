@@ -31,7 +31,8 @@
 	},
 	"require-dev": {
 		"drupal/coder": "^9.0",
-		"phpdocumentor/shim": "^3.10"
+		"phpdocumentor/shim": "^3.10",
+		"phpunit/php-code-coverage": "^11.0 || ^12.0"
 	},
 	"autoload": {
 		"psr-4": {
@@ -52,12 +53,14 @@
 			"php tests/run-suite.php"
 		],
 		"cs": "phpcs",
-		"cs:fix": "phpcbf"
+		"cs:fix": "phpcbf",
+		"coverage": "php tests/coverage.php"
 	},
 	"scripts-descriptions": {
 		"lint": "Runs php -l over every PHP file in the package.",
 		"test": "Lints, then drives the wrapper against a fake fetch.",
 		"cs": "Checks coding standards with phpcs.",
-		"cs:fix": "Fixes what phpcbf can fix."
+		"cs:fix": "Fixes what phpcbf can fix.",
+		"coverage": "Runs the suite under xdebug or pcov and writes Clover to coverage/."
 	}
 }

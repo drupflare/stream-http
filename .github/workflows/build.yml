@@ -69,7 +69,6 @@ jobs:
         with:
           php-version: ${{ matrix.php }}
           extensions: json, mbstring
-          # STREAM_IS_URL wrappers are gated by allow_url_fopen; the suite asserts it is On
           ini-values: allow_url_fopen=1
           coverage: none
       - name: Run Wrapper Suite
