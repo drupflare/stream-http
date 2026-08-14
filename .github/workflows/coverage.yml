@@ -1,0 +1,77 @@
+name: Check Test Coverage
+
+on:
+  push:
+    branches: [master, feat/*, ver/*, renovate/*]
+  pull_request:
+    branches: [master, feat/*, ver/*, renovate/*]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  coverage:
+    name: Wrapper Suite Coverage
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@v7
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring
+          coverage: pcov
+          ini-values: pcov.directory=${{ github.workspace }}/src, allow_url_fopen=1
+      - name: Cache Composer Downloads
+        uses: actions/cache@v6
+        with:
+          path: ~/.cache/composer
+          key: composer-8.4-${{ hashFiles('composer.json') }}
+          restore-keys: composer-8.4-
+      - name: Install Composer Dependencies
+        run: composer install --no-interaction --no-progress
+      - name: Run Wrapper Suite with Coverage
+        run: php -d opcache.enable_cli=0 tests/coverage.php
+      - name: Upload Coverage to Codecov
+        if: success() || failure()
+        uses: codecov/codecov-action@v7
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          slug: drupflare/stream-http
+          fail_ci_if_error: false
+          report_type: coverage
+          flags: wrapper-suite
+          files: coverage/stream-http.clover.xml
+      - name: Archive Coverage
+        if: success() || failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: coverage
+          path: coverage/
+          retention-days: 30
+      - name: Coverage to Job Summary
+        if: success() || failure()
+        run: |
+          echo "## Wrapper Suite Coverage" >> "$GITHUB_STEP_SUMMARY"
+          if [ -f coverage/stream-http.coverage.txt ]; then
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+            cat coverage/stream-http.coverage.txt >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo 'No report was produced; the run refused to measure.' >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: Add Coverage as PR Comment
+        if: github.event_name == 'pull_request'
+        uses: marocchino/sticky-pull-request-comment@v3
+        with:
+          header: wrapper-suite-coverage
+          recreate: true
+          path: coverage/stream-http.coverage.txt
