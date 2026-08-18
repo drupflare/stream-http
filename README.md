@@ -10,9 +10,8 @@
 [![PHP](https://img.shields.io/badge/php-%3E%3D8.3-777bb4.svg)](composer.json)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-`file_get_contents('https://...')` works again in a PHP-in-wasm runtime, because **you** hand the
-package the fetch. No sockets, no cURL, no OpenSSL transport, no framework, and no dependency on
-the host it was extracted from.
+`file_get_contents('https://...')` works in a PHP-in-wasm runtime. The caller supplies the fetch;
+the package needs no sockets, no cURL, no OpenSSL transport and no framework.
 
 ---
 
@@ -20,7 +19,7 @@ the host it was extracted from.
 
 - [Install](#-install)
 - [Quick Start](#-quick-start)
-- [The Fetch Contract](#-the-fetch-contract)
+- [Fetch Contract](#-fetch-contract)
 - [Registering From the Host](#-registering-from-the-host)
 - [Out of Scope](#-out-of-scope)
 - [API](#-api)
@@ -58,7 +57,7 @@ and `stream_get_contents()` all work from that point on, for both `http://` and 
 
 ---
 
-## 🔌 The Fetch Contract
+## 🔌 Fetch Contract
 
 One callable and two array shapes are the entire integration surface.
 
