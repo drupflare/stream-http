@@ -82,28 +82,28 @@
 								<div class="accordion" style="margin-bottom: 0">
 		<div class="accordion-group">
 			<div class="accordion-heading">
-									<a class="accordion-toggle " data-toggle="collapse" data-target="#namespace-1240465489"></a>
+									<a class="accordion-toggle " data-toggle="collapse" data-target="#namespace-1565371998"></a>
 								<a href="namespaces/default.html" style="margin-left: 30px; padding-left: 0">\</a>
 			</div>
-			<div id="namespace-1240465489" class="accordion-body collapse in">
+			<div id="namespace-1565371998" class="accordion-body collapse in">
 				<div class="accordion-inner">
 
 													<div class="accordion" style="margin-bottom: 0">
 		<div class="accordion-group">
 			<div class="accordion-heading">
-									<a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-51545531"></a>
+									<a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-97378489"></a>
 								<a href="namespaces/drupflare.html" style="margin-left: 30px; padding-left: 0">Drupflare</a>
 			</div>
-			<div id="namespace-51545531" class="accordion-body collapse ">
+			<div id="namespace-97378489" class="accordion-body collapse ">
 				<div class="accordion-inner">
 
 													<div class="accordion" style="margin-bottom: 0">
 		<div class="accordion-group">
 			<div class="accordion-heading">
-									<a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-1065339295"></a>
+									<a class="accordion-toggle collapsed" data-toggle="collapse" data-target="#namespace-775292231"></a>
 								<a href="namespaces/drupflare-streamhttp.html" style="margin-left: 30px; padding-left: 0">StreamHttp</a>
 			</div>
-			<div id="namespace-1065339295" class="accordion-body collapse ">
+			<div id="namespace-775292231" class="accordion-body collapse ">
 				<div class="accordion-inner">
 
 					
@@ -148,20 +148,20 @@
 					<p>
 						<em>An http:// and https:// stream wrapper backed by an injected fetch callable.</em>
 					</p>
-					<p>WHY THIS EXISTS AT ALL. In a PHP-in-wasm runtime there are no sockets, so overriding an HTTP
+					<p>In a PHP-in-wasm runtime there are no sockets, so overriding an HTTP
 client's own handler stack fixes that one client and nothing else. Any vendor or contrib code
 calling file_get_contents('https://...') either fails with &quot;Unable to find the wrapper&quot; or -- on
 a build whose glue still references a suspension helper the link removed -- dies with a JS
 ReferenceError that PHP cannot catch. Both failures are per-call and late, which is the worst
 shape for diagnosis. Shadowing both schemes with this class makes the outcome a documented
 refusal instead.</p>
-<p>WHAT IT DELIBERATELY DOES NOT DO. It does not stream. The whole body is fetched on open and
+<p><strong>It does not stream.</strong> The whole body is fetched on open and
 served from memory, because PHP's stream_read() is synchronous and a real streaming read would
 have to suspend the interpreter mid-call. A build without suspension can only fetch-then-read.</p>
-<p>THE FETCH IS INJECTED, never reached for. This package has no host, no service container and no
-framework; register() takes the callable and the wrapper calls nothing else. See README for the
-request and reply shape.</p>
-<p>REGISTER FROM THE HOST, BEFORE THE FRAMEWORK BOOTS. A stream wrapper has to exist before any
+<p><strong>The fetch is injected</strong>, never reached for. This package has no host, no service container
+and no framework; register() takes the callable and the wrapper calls nothing else. See README
+for the request and reply shape.</p>
+<p><strong>Register from the host, before the framework boots.</strong> A stream wrapper has to exist before any
 code that uses one runs, and a service container is built too late for that.</p>
 
 																																<section id="summary">
@@ -1450,7 +1450,7 @@ ArgumentCountError waiting for the first caller who touches an http:// path.</p>
 							</a>
 							and authored
 							                    on
-							August 18th, 2026 at 05:01.
+							August 21st, 2026 at 19:41.
 						</section>
 					</section>
 				</section>
