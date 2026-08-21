@@ -10,7 +10,7 @@ use Throwable;
 /**
  * An http:// and https:// stream wrapper backed by an injected fetch callable.
  *
- * WHY THIS EXISTS AT ALL. In a PHP-in-wasm runtime there are no sockets, so overriding an HTTP
+ * In a PHP-in-wasm runtime there are no sockets, so overriding an HTTP
  * client's own handler stack fixes that one client and nothing else. Any vendor or contrib code
  * calling file_get_contents('https://...') either fails with "Unable to find the wrapper" or -- on
  * a build whose glue still references a suspension helper the link removed -- dies with a JS
@@ -18,15 +18,15 @@ use Throwable;
  * shape for diagnosis. Shadowing both schemes with this class makes the outcome a documented
  * refusal instead.
  *
- * WHAT IT DELIBERATELY DOES NOT DO. It does not stream. The whole body is fetched on open and
+ * **It does not stream.** The whole body is fetched on open and
  * served from memory, because PHP's stream_read() is synchronous and a real streaming read would
  * have to suspend the interpreter mid-call. A build without suspension can only fetch-then-read.
  *
- * THE FETCH IS INJECTED, never reached for. This package has no host, no service container and no
- * framework; register() takes the callable and the wrapper calls nothing else. See README for the
- * request and reply shape.
+ * **The fetch is injected**, never reached for. This package has no host, no service container
+ * and no framework; register() takes the callable and the wrapper calls nothing else. See README
+ * for the request and reply shape.
  *
- * REGISTER FROM THE HOST, BEFORE THE FRAMEWORK BOOTS. A stream wrapper has to exist before any
+ * **Register from the host, before the framework boots.** A stream wrapper has to exist before any
  * code that uses one runs, and a service container is built too late for that.
  */
 class HttpsStreamWrapper

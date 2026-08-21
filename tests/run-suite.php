@@ -4,15 +4,15 @@
  * @file
  * Drives HttpsStreamWrapper against a fake fetch.
  *
- * WHY A FAKE AND NOT A NETWORK. The whole point of the package is that the transport is injected,
+ * The whole point of the package is that the transport is injected,
  * so the suite injects one it can inspect: every request the wrapper builds is recorded, and every
  * reply the wrapper has to cope with is scripted. That makes the refusal paths -- which are the
  * paths that matter, because a stream function signals failure with FALSE or 0 -- testable without
  * a socket, a server or a wasm runtime.
  *
- * WHAT php -l CANNOT SEE, and why this exists on top of it. A stream wrapper is resolved by method
- * NAME at runtime: rename stream_read and PHP simply never calls it, with no error anywhere. Only
- * driving the class through fopen()/fread()/fseek() proves the prototype is still satisfied.
+ * What `php -l` cannot see: a stream wrapper is resolved by method name at runtime, so renaming
+ * stream_read means PHP simply never calls it, with no error anywhere. Only driving the class
+ * through fopen()/fread()/fseek() proves the prototype is still satisfied.
  *
  * Usage:
  *   php tests/run-suite.php
