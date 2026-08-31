@@ -19,7 +19,7 @@ module it came from would mean this is not a standalone package.
 
 `../drupflare` still ships its own copy at `src/StreamWrapper/HttpsStreamWrapper.php`, wired to
 `Host::call('cfwFetch', ...)`, and there is **no sync check between the two**. In the parent project
-that exact shape of duplication went silently stale twice. The two have now diverged on purpose:
+that exact shape of duplication went silently stale twice. The two have now diverged:
 this one takes an injected callable, that one reaches for the module's `Host`. Treat them as separate
 implementations of one contract, not as copies.
 
@@ -39,7 +39,7 @@ executes on the edge.
 - **A missing `body` key is refused, in both.** `?? ''` made a host that forgot the field
   indistinguishable from a genuine 204.
 
-**One narrower divergence remains, and it is deliberate.** The module copy checks
+**One narrower divergence remains, and it is intended.** The module copy checks
 `array_key_exists('body', $reply)` and then casts with `(string)`, so a `null` or integer `body`
 passes and becomes `''` or `'7'`. This package requires `is_string()` and refuses anything else by
 name. The module's version is right for its own caller - `Host::call()` decodes JSON from a host that
@@ -66,7 +66,7 @@ Both are measured, and they are not the same failure. Do not merge them.
   `ReferenceError: Asyncify is not defined` out of a wasm import. The glue has two
   `Asyncify.handleAsync(...)` call sites and declares `Asyncify` nowhere (`grep -c` for a
   declaration returns 0), so it is a free identifier that `ASYNCIFY=0` compiled out. **PHP cannot
-  catch it** — `@` and `catch (Throwable)` were both measured useless from two unrelated routes — so
+  catch it**: `@` and `catch (Throwable)` were both measured useless from two unrelated routes, so
   the invocation dies with no PHP fatal, no `printErr` and no logger output. This is the failure the
   wrapper works around.
 - A **naive `-sJSPI` build with no `-sSUPPORT_LONGJMP=wasm`** fails differently and earlier: every
@@ -75,7 +75,7 @@ Both are measured, and they are not the same failure. Do not merge them.
   always sits underneath. `-sSUPPORT_LONGJMP=wasm` is the fix, isolated with a standalone C probe,
   and it is compile-time not link-time. This is a build-flag problem, not a wrapper problem.
 
-Registration happens from the **HOST**, before the framework boots — in the parent project from
+Registration happens from the **HOST**, before the framework boots; in the parent project from
 `worker/src/drupal/site-php.ts`, around the `HttpsStreamWrapper::register()` call. A stream wrapper
 has to exist before any code that uses one runs, and a service container is built too late for that.
 The class docblock used to claim a service provider did it; it never did.

@@ -82,7 +82,7 @@ One callable and two array shapes are the entire integration surface.
 | `error`   | `string` | the named reason, when `ok` is not `true`                  |
 
 `body` is required, not defaulted to `''`. A default would make a transport that omitted the field
-look like a genuinely empty 204.
+look like an empty 204.
 
 ---
 
@@ -92,7 +92,7 @@ look like a genuinely empty 204.
 too late for that, so a service provider or a module hook is the wrong place. In the project this
 was extracted from, registration happens from the JavaScript host, in
 `worker/src/drupal/site-php.ts`, around the `HttpsStreamWrapper::register()` call in the boot
-script — before Drupal's kernel exists.
+script, before Drupal's kernel exists.
 
 ---
 
@@ -124,7 +124,7 @@ script — before Drupal's kernel exists.
 | `SCHEMES`                           | `['http', 'https']`, the registrar's default                         |
 
 **Why both a constructor and a static registrar.** PHP constructs a registered wrapper with **no
-arguments** — `stream_wrapper_register()` takes the class name, not an instance — so a
+arguments** (`stream_wrapper_register()` takes the class name, not an instance), so a
 constructor-only design cannot work for the registered path. The static registrar is the production
 route; the constructor parameter is the escape hatch that makes the class drivable directly, which
 is how the suite exercises it without touching the wrapper registry at all.
