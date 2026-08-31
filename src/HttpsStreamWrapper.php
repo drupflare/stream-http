@@ -241,7 +241,7 @@ class HttpsStreamWrapper
 			);
 		}
 		// a bodiless reply must say so with an empty string. Defaulting an absent key to '' would
-		// make a transport that forgot the field indistinguishable from a genuinely empty response
+		// make a transport that forgot the field indistinguishable from an empty response
 		if (!is_string($reply['body'] ?? null)) {
 			return $this->fail(
 				$options,

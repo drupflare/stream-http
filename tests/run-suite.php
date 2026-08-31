@@ -4,7 +4,7 @@
  * @file
  * Drives HttpsStreamWrapper against a fake fetch.
  *
- * The whole point of the package is that the transport is injected,
+ * The package exists so the transport is injected,
  * so the suite injects one it can inspect: every request the wrapper builds is recorded, and every
  * reply the wrapper has to cope with is scripted. That makes the refusal paths -- which are the
  * paths that matter, because a stream function signals failure with FALSE or 0 -- testable without
@@ -200,7 +200,7 @@ fclose($fh);
 $before = $calls->count();
 ok('file_exists() answers TRUE without a fetch', file_exists('https://example.test/c'));
 ok('url_stat() spent no request', $calls->count() === $before, $calls->count() - $before);
-// url_stat() reports size 0 on purpose rather than spending a request, so filesize() on a URL
+// url_stat() reports size 0 rather than spending a request, so filesize() on a URL
 // nobody opened reads 0. This pins that trade-off rather than leaving it to be rediscovered
 clearstatcache();
 ok(
