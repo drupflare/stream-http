@@ -6,7 +6,7 @@ formerly named `cfw_capability`), and now standalone.
 
 ## Status
 
-**Published.** `drupflare/stream-http` is live on Packagist at **v0.1.0**. The three blockers that
+**Published.** `drupflare/stream-http` is live on Packagist at **v0.1.2**. The three blockers that
 held it back are closed:
 
 - the namespace is `Drupflare\StreamHttp`, which is what `composer.json` autoloads from `src/`
@@ -17,34 +17,30 @@ held it back are closed:
 `composer show --tree` on an installed copy must list `php` and nothing else. A dependency on the
 module it came from would mean this is not a standalone package.
 
-`../drupflare` still ships its own copy at `src/StreamWrapper/HttpsStreamWrapper.php`, wired to
-`Host::call('cfwFetch', ...)`, and there is **no sync check between the two**. In the parent project
-that exact shape of duplication went silently stale twice. The two have now diverged:
-this one takes an injected callable, that one reaches for the module's `Host`. Treat them as separate
-implementations of one contract, not as copies.
+## The module copy is a thin subclass
 
-## Divergences from the module copy
+`../drupflare` carries no second implementation. Its `src/StreamWrapper/HttpsStreamWrapper.php`
+extends this package's class and adds one thing: a `hostFetch()` closure over
+`Host::call('cfwFetch', ...)`, plus a `register()` widened to make the fetch optional, so
+`drupflare.module` and the Worker host can both call it with no arguments. A zero-argument override
+would be a fatal at class load; widening a parameter is allowed where narrowing is not.
 
-Two defects were found here and reported; **both are now fixed in `../drupflare` and in
-`worker/drupal/drupflare/`, and `assets:driver` was re-run (221,818 -> 223,056 bytes)**. Verified in
-this tree, not taken on trust: `drupflare/src/StreamWrapper/HttpsStreamWrapper.php:271` is
-`responseMeta()`, and `:121` refuses a reply with no `body` key. Do not re-fix them. If you do touch
-that file, re-run `bun run assets:driver` in `worker/` - `assets/driver.json` is the copy that
-executes on the edge.
+Every stream method, every named refusal and `responseMeta()` are inherited from here, so a
+behaviour change belongs in this repo and reaches the module for free.
 
-- **`stream_metadata()` -> `responseMeta()`, in both.** That name belongs to the `streamWrapper`
-  prototype, where PHP calls it as `stream_metadata(string $path, int $option, mixed $value): bool`
-  for `touch()`, `chmod()` and `chown()`, so a 0-argument method under that name is an
+Two defects were fixed here while the copies were being collapsed, and their reasoning sits at the
+call sites rather than in this file:
+
+- **`responseMeta()`, not `stream_metadata()`.** That name belongs to the `streamWrapper` prototype,
+  where PHP calls it as `stream_metadata(string $path, int $option, mixed $value): bool` for
+  `touch()`, `chmod()` and `chown()`, so a 0-argument method under that name is an
   `ArgumentCountError` waiting for the first caller who touches an `http://` path.
-- **A missing `body` key is refused, in both.** `?? ''` made a host that forgot the field
-  indistinguishable from a genuine 204.
+- **`stream_open()` requires `is_string($reply['body'])`.** Defaulting an absent key to `''` made a
+  transport that forgot the field indistinguishable from an empty response.
 
-**One narrower divergence remains, and it is intended.** The module copy checks
-`array_key_exists('body', $reply)` and then casts with `(string)`, so a `null` or integer `body`
-passes and becomes `''` or `'7'`. This package requires `is_string()` and refuses anything else by
-name. The module's version is right for its own caller - `Host::call()` decodes JSON from a host that
-always sends a string - while this package cannot know what a consumer's callable will hand back, so
-it validates rather than casts. Do not "align" them by weakening this side.
+After any change here, re-run `bun run assets:driver` in `worker/`. The packer mounts
+`../stream-http/src` at `libraries/drupflare-stream-http/src`, and `assets/driver.json` is the copy
+that executes on the edge.
 
 ## The constraint that shapes everything
 
@@ -61,7 +57,8 @@ the injected callable. That means:
 
 Both are measured, and they are not the same failure. Do not merge them.
 
-- On the shipping `ASYNCIFY=0` build (`vendor/static-free-v1`), `stream_get_wrappers()` **does**
+- On the `ASYNCIFY=0` 8.3 build (`vendor/static-free-v1`, an experiment arm; the shipping
+  interpreter is a raw `CompiledWasm` import of php8.5), `stream_get_wrappers()` **does**
   advertise http and https, and reading through the native wrapper throws
   `ReferenceError: Asyncify is not defined` out of a wasm import. The glue has two
   `Asyncify.handleAsync(...)` call sites and declares `Asyncify` nowhere (`grep -c` for a
@@ -109,7 +106,7 @@ Two reversals from what this file used to say, both because the tree moved from 
   2 spaces" against a file with no indent spaces, so it can never pass and carries no signal.
 - **`Drupal.Classes.UseGlobalClass.RedundantUseStatement` is excluded**, because the house rule is
   always `use` then the short name, with no leading-backslash inline reference even for `Closure` or
-  `Throwable`. Prior art: `rom/phpcs.xml.dist:52` excludes exactly this sniff.
+  `Throwable`. Prior art: `rom/phpcs.xml.dist:66` excludes exactly this sniff.
 
 A malformed `phpcs.xml.dist` can **fail silently and report a fake pass**. Verify any ruleset change
 by loading it. `--` inside an XML comment is invalid; this repo hit that once while the exclusions
@@ -118,9 +115,10 @@ failure mode is at least loud on this version.
 
 ## Rules
 
-- Never silence PHPStan or phpcs with an ignore, a baseline entry, an inline `@var`, a cast, or a
-  widened type. Fix the cause; if the rule contradicts Gregory's style, disable the rule and say
-  which one and why.
+- Never silence phpcs with an ignore, an inline `@var`, a cast, or a widened type. Fix the cause; if
+  the rule contradicts Gregory's style, disable the rule and say which one and why. There is no
+  phpstan here - no `phpstan.neon`, not in `vendor/bin`, no composer script - so a type claim in
+  this repo is checked by the suite and by `php -l`, not by static analysis.
 - The package must stay framework-free. No `Drupal\`, no container, no `Host`.
 - Comments: lowercase, terse, one line, no trailing period, only where the WHY is non-obvious. PHP
   docblocks are the exception - Drupal's capital-and-full-stop rule is correct in a `/** */` block,

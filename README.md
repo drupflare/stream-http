@@ -213,7 +213,7 @@ it, with no error anywhere. The suite therefore drives the class through `fopen(
 | [`drupflare/worker`](https://github.com/drupflare/worker)       | the consumer: Drupal 11 on Cloudflare Workers                 |
 | [`drupflare/drupflare`](https://github.com/drupflare/drupflare) | the Drupal module this was extracted from; wires `Host::call` |
 | [`drupflare/cartridge`](https://github.com/drupflare/cartridge) | the host side: running a blocking interpreter in a DO         |
-| [`drupflare/phasm`](https://github.com/drupflare/phasm)         | builds the interpreter, including the JSPI flags above        |
+| [`drupflare/phasm`](https://github.com/drupflare/phasm)         | builds the socketless PHP interpreter this wrapper serves     |
 
 ---
 
