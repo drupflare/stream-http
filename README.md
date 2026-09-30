@@ -73,13 +73,13 @@ One callable and two array shapes are the entire integration surface.
 
 **The reply it accepts:**
 
-| Key       | Type     | Notes                                                      |
-| --------- | -------- | ---------------------------------------------------------- |
-| `ok`      | `bool`   | anything other than `true` is a refusal                    |
-| `body`    | `string` | **required when `ok`** — send `''` for a bodiless response |
-| `status`  | `int`    | optional; cast, and reported through `responseMeta()`      |
-| `headers` | `array`  | optional; non-string values are dropped rather than cast   |
-| `error`   | `string` | the named reason, when `ok` is not `true`                  |
+| Key       | Type     | Notes                                                     |
+| --------- | -------- | --------------------------------------------------------- |
+| `ok`      | `bool`   | anything other than `true` is a refusal                   |
+| `body`    | `string` | **required when `ok`**: send `''` for a bodiless response |
+| `status`  | `int`    | optional; cast, and reported through `responseMeta()`     |
+| `headers` | `array`  | optional; non-string values are dropped rather than cast  |
+| `error`   | `string` | the named reason, when `ok` is not `true`                 |
 
 `body` is required, not defaulted to `''`. A default would make a transport that omitted the field
 look like an empty 204.
